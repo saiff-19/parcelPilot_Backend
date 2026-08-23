@@ -30,7 +30,7 @@ def read_root():
 @app.on_event("startup")
 def startup_event():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    resource_dir = os.path.join(os.path.dirname(base_dir), "resourcePack")
+    resource_dir = os.path.join(base_dir, "resourcePack")
     store.load(resource_dir)
     print(f"Loaded {len(store.accounts)} accounts, {len(store.orders)} orders, {len(store.tickets)} tickets.")
 
