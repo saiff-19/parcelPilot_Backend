@@ -4,7 +4,7 @@ import operator
 import json
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMessage, SystemMessage
 from langgraph.graph import StateGraph, END
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_core.tools import StructuredTool
 from langgraph.prebuilt import ToolNode
 
@@ -90,7 +90,7 @@ def call_model(state: AgentState):
     user = state["user"]
     tools = build_tools(user)
     
-    llm = ChatOpenAI(model="gpt-4o", temperature=0).bind_tools(tools)
+    llm = ChatGroq(model="llama3-70b-8192", temperature=0).bind_tools(tools)
     
     # Prepend system prompt
     system_prompt = SystemMessage(content=f"""
