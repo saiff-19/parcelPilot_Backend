@@ -45,6 +45,9 @@ def chat(req: ChatRequest):
     
     state = {"messages": messages, "user": req.user}
     
+    import time
+    start_time = time.time()
+
     # Run langgraph
     result = graph.invoke(state)
     final_messages = result["messages"]
@@ -56,6 +59,11 @@ def chat(req: ChatRequest):
                 tool_activity.append({"tool": tc["name"], "args": tc["args"]})
                 
     last_msg = final_messages[-1]
+    
+    latency = time.time() - start_time
+    import logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.info(f"Chat request by user {req.user['id']} ({req.user.get('role')}) - Tools: {[t['tool'] for t in tool_activity]} - Latency: {latency:.2f}s")
     
     return {
         "reply": last_msg.content if isinstance(last_msg, AIMessage) else str(last_msg),
