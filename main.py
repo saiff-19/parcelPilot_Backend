@@ -29,7 +29,7 @@ def read_root():
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "healthy", "service": "ParcelPilot AI API"}
+    return "OK"
 
 @app.on_event("startup")
 def startup_event():
