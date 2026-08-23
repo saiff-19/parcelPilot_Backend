@@ -1,5 +1,5 @@
 import os
-from typing import TypedDict, Annotated, Sequence, Any, Dict, List
+from typing import TypedDict, Annotated, Sequence, Any, Dict, List, Optional
 import operator
 import json
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMessage, SystemMessage
@@ -18,7 +18,7 @@ class AgentState(TypedDict):
     user: Dict[str, Any]
     
 def build_tools(user: Dict[str, Any]):
-    def _search_docs(query: str, account_id: str = None) -> str:
+    def _search_docs(query: str, account_id: Optional[str] = None) -> str:
         """Search policies, SOPs, and agreements."""
         res = search_documents(query, account_id)
         return json.dumps(res, default=str) if res else "No documents found."

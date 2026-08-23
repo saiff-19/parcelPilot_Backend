@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from app.ingestion import store
 from app.agent import graph
@@ -19,6 +22,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+def read_root():
+    return {"status": "ParcelPilot API is running. Please access the frontend UI."}
 
 @app.on_event("startup")
 def startup_event():
