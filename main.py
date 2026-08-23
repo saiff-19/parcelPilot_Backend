@@ -27,6 +27,10 @@ app.add_middleware(
 def read_root():
     return {"status": "ParcelPilot API is running. Please access the frontend UI."}
 
+@app.get("/api/health")
+def health_check():
+    return {"status": "healthy", "service": "ParcelPilot AI API"}
+
 @app.on_event("startup")
 def startup_event():
     base_dir = os.path.dirname(os.path.abspath(__file__))
