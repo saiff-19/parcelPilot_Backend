@@ -11,7 +11,7 @@ from app.ingestion import store
 from app.agent import graph
 from app.actions import confirm_action, reject_action
 from app.analytics import detect_proactive_issues
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 
 app = FastAPI(title="ParcelPilot AI Support Copilot")
 
@@ -65,7 +65,6 @@ def chat(req: ChatRequest):
     
     tool_activity = []
     action_payload = None
-    from langchain_core.messages import AIMessage, ToolMessage
     for m in final_messages[len(messages):]: # Only look at new messages
         if isinstance(m, AIMessage) and getattr(m, 'tool_calls', None):
             for tc in m.tool_calls:
