@@ -21,26 +21,26 @@ def build_tools(user: Dict[str, Any]):
     def _search_docs(query: str, account_id: str = None) -> str:
         """Search policies, SOPs, and agreements."""
         res = search_documents(query, account_id)
-        return json.dumps(res) if res else "No documents found."
+        return json.dumps(res, default=str) if res else "No documents found."
         
     def _get_account(account_id: str) -> str:
         """Lookup account details by ID."""
         try:
-            return json.dumps(lookup_account(user, account_id))
+            return json.dumps(lookup_account(user, account_id), default=str)
         except Exception as e:
             return str(e)
             
     def _get_order(order_id: str) -> str:
         """Lookup order by ID."""
         try:
-            return json.dumps(lookup_order(user, order_id))
+            return json.dumps(lookup_order(user, order_id), default=str)
         except Exception as e:
             return str(e)
             
     def _get_ticket(ticket_id: str) -> str:
         """Lookup ticket by ID."""
         try:
-            return json.dumps(lookup_ticket(user, ticket_id))
+            return json.dumps(lookup_ticket(user, ticket_id), default=str)
         except Exception as e:
             return str(e)
 
@@ -50,7 +50,7 @@ def build_tools(user: Dict[str, Any]):
             order = lookup_order(user, order_id)
             if not order: return "Order not found or unauthorized."
             account = lookup_account(user, order["account_id"])
-            return json.dumps(calculate_cancellation_fee(order, account, cancel_request_time))
+            return json.dumps(calculate_cancellation_fee(order, account, cancel_request_time), default=str)
         except Exception as e:
             return str(e)
             
@@ -60,14 +60,14 @@ def build_tools(user: Dict[str, Any]):
             order = lookup_order(user, order_id)
             if not order: return "Order not found or unauthorized."
             account = lookup_account(user, order["account_id"])
-            return json.dumps(calculate_service_credit(order, account, evaluation_time))
+            return json.dumps(calculate_service_credit(order, account, evaluation_time), default=str)
         except Exception as e:
             return str(e)
             
     def _propose_escalation(account_id: str, ticket_id: str, reason: str, severity: str, summary: str) -> str:
         """Propose an escalation. This will prepare a pending action requiring explicit UI confirmation."""
         res = propose_escalation(user, account_id, ticket_id, reason, severity, summary)
-        return json.dumps(res)
+        return json.dumps(res, default=str)
 
     return [
         StructuredTool.from_function(_search_docs, name="search_docs"),
@@ -90,7 +90,7 @@ def call_model(state: AgentState):
     user = state["user"]
     tools = build_tools(user)
     
-    llm = ChatGroq(model="llama3-70b-8192", temperature=0).bind_tools(tools)
+    llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0).bind_tools(tools)
     
     # Prepend system prompt
     system_prompt = SystemMessage(content=f"""
