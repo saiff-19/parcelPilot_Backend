@@ -27,7 +27,7 @@ app.add_middleware(
 def read_root():
     return {"status": "ParcelPilot API is running. Please access the frontend UI."}
 
-@app.get("/api/health")
+@app.api_route("/api/health", methods=["GET", "HEAD"])
 def health_check():
     return "OK"
 
