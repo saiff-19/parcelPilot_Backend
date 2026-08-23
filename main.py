@@ -64,10 +64,20 @@ def chat(req: ChatRequest):
     final_messages = result["messages"]
     
     tool_activity = []
+    action_payload = None
+    from langchain_core.messages import AIMessage, ToolMessage
     for m in final_messages[len(messages):]: # Only look at new messages
-        if isinstance(m, AIMessage) and m.tool_calls:
+        if isinstance(m, AIMessage) and getattr(m, 'tool_calls', None):
             for tc in m.tool_calls:
                 tool_activity.append({"tool": tc["name"], "args": tc["args"]})
+        if isinstance(m, ToolMessage):
+            try:
+                import json
+                parsed = json.loads(m.content)
+                if isinstance(parsed, dict) and parsed.get("status") == "PENDING_CONFIRMATION":
+                    action_payload = parsed
+            except Exception:
+                pass
                 
     last_msg = final_messages[-1]
     
@@ -78,7 +88,8 @@ def chat(req: ChatRequest):
     
     return {
         "reply": last_msg.content if isinstance(last_msg, AIMessage) else str(last_msg),
-        "tool_activity": tool_activity
+        "tool_activity": tool_activity,
+        "action": action_payload
     }
 
 class ActionRequest(BaseModel):
